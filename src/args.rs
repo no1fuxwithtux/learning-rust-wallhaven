@@ -20,10 +20,10 @@ pub mod args {
         }
     }
 
-    //Dieser Trait sorgt dafür, dass die Member selber bestimmen können, wie sie ihre eigene
-    //Instanz erstellen, zugleich brauchen wir aber eigentlich immer einen Option Wert. Das können
-    //wir wiederum später machen wir implementieren dafür eine generische Funtion, welche den Arg
-    //supported
+    pub trait NewArg<T> {
+        fn new (input : &str) -> Result<T, ArgError>;
+    }
+
     pub enum Category{
         General,
         Anime,
@@ -296,12 +296,15 @@ pub mod args {
                 Category::People => 1,
             }
         }
-        pub fn new (input : &str) -> Result<Category, ArgError>{
+    }
+    
+    impl NewArg<Category> for Category {
+        fn new (input : &str) -> Result<Category, ArgError>{
             match input.to_uppercase().as_ref() {
                 "GENERAL" => Ok(Category::General),
                 "ANIME" => Ok(Category::Anime),
                 "PEOPLE" => Ok(Category::People),
-                _ => Err(ArgError { error: String::from("unknown category")})
+                _ => Err(ArgError { error: String::from("unknown category (valid: General, Anime, People)")})
             }
         }
     }
@@ -314,15 +317,19 @@ pub mod args {
                 Purity::Nsfw => 1
             }
         }
-        pub fn new (input : &str) -> Result<Purity, ArgError> {
+    }
+    
+    impl NewArg<Purity> for Purity {
+        fn new (input : &str) -> Result<Purity, ArgError> {
             match input.to_uppercase().as_ref() {
                 "NSFW" => Ok(Purity::Nsfw),
                 "SKETCHY" => Ok(Purity::Sketchy),
                 "SFW" => Ok(Purity::Sfw),
-                _ => Err(ArgError { error: String::from("unkown purity")})
+                _ => Err(ArgError { error: String::from("unkown purity (valid: Sfw, Sketchy, Nsfw)")})
             }
         }
     }
+
 
     impl TopRange {
         pub fn get_val(&self) -> &str {
@@ -336,7 +343,10 @@ pub mod args {
                 TopRange::OneYear => "1y"
             }
         }
-        pub fn new (input : &str) -> Result<TopRange, ArgError> {
+    }
+
+    impl NewArg<TopRange> for TopRange {
+        fn new (input : &str) -> Result<TopRange, ArgError> {
             match input.to_uppercase().as_ref() {
                 "1D" => Ok(TopRange::OneDay),
                 "3D" => Ok(TopRange::ThreeDays),
@@ -349,6 +359,7 @@ pub mod args {
             }
         }
     }
+
     impl Sorting {
         pub fn get_val(&self) -> &str {
             match self {
@@ -360,17 +371,21 @@ pub mod args {
                 Sorting::Toplist => "toplist",
             }
         }
-        pub fn new (input : &str) -> Result<Sorting, ArgError> {
+    }
+
+    impl NewArg<Sorting> for Sorting {
+        fn new (input : &str) -> Result<Sorting, ArgError> {
             match input.to_uppercase().as_ref() {
                 "DATEADDED" => Ok(Sorting::DateAdded),
                 "RELEVANCE" => Ok(Sorting::Relevance),
                 "RANDOM" => Ok(Sorting::Random),
                 "VIEWS" => Ok(Sorting::Views),
                 "FAVORITES" => Ok(Sorting::Favorites),
-                _ => Err (ArgError { error: String::from("unknown sorting method")})
+                _ => Err (ArgError { error: String::from("unknown sorting method (valid: DateAdded, Relevance, Random, Views, Favorites)")})
             }
         }
     }
+
     impl Order {
         pub fn get_val(&self) -> &str{
             match self{
@@ -378,7 +393,10 @@ pub mod args {
                 Order::Desc => "desc"
             }
         }
-        pub fn new (input : &str) -> Result<Order, ArgError> {
+    }
+
+    impl NewArg<Order> for Order {
+        fn new (input : &str) -> Result<Order, ArgError> {
             match input {
                 "ASC" => Ok(Order::Asc),
                 "DESC" => Ok(Order::Desc),
@@ -386,14 +404,15 @@ pub mod args {
             }
         }
     }
+
     impl fmt::Display for Resolution {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             write!(f, "{}x{}", self.width, self.height )           
         }
     }
 
-    impl Resolution {
-        pub fn new (input : &str) -> Result<Resolution, ArgError> {
+    impl NewArg<Resolution> for Resolution {
+        fn new (input : &str) -> Result<Resolution, ArgError> {
             if input.contains("x") {
                 let mut i : u8 = 0;
                 let mut width = 0;
@@ -425,8 +444,8 @@ pub mod args {
         }
     }
 
-    impl MinResolution {
-        pub fn new (input : &str) -> Result<MinResolution, ArgError> {
+    impl NewArg<MinResolution> for MinResolution {
+        fn new (input : &str) -> Result<MinResolution, ArgError> {
             if input.contains("x") {
                 let mut i : u8 = 0;
                 let mut width = 0;
@@ -470,8 +489,8 @@ pub mod args {
             write!(f, "{}x{}", self.width, self.height)
         }
     }
-    impl Ratio {
-        pub fn new (input : &str) -> Result<Ratio, ArgError> {
+    impl NewArg<Ratio> for Ratio {
+        fn new (input : &str) -> Result<Ratio, ArgError> {
             if input.contains("x"){
                 let mut i = 0;
                 let mut width : u8 = 0;
@@ -501,7 +520,7 @@ pub mod args {
 
         }
     } 
-    impl Color {
+    impl NewArg<Color> for Color {
         fn new (hex : &str) -> Result<Color,ArgError> {
             let mut missmatch : bool = false;
             let result_hex = hex.replace('#', "").to_lowercase();
@@ -545,7 +564,7 @@ pub mod args {
             }
         }
     }
-    impl Tag {
+    impl NewArg<Tag> for Tag {
         fn new (input : &str) -> Result<Tag, ArgError> {
             if input.len() > 1{
             if input.contains("+"){
@@ -568,7 +587,7 @@ pub mod args {
             write!(f, "{}", self.hex_value.to_lowercase())
         }
     }
-    impl Seed {
+    impl NewArg<Seed> for Seed {
         fn new (seed : &str) -> Result<Seed, ArgError> {
             let mut missmatch : bool = false;
             let valid_characters : [char; 36] =  ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o','p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',];

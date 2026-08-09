@@ -12,5 +12,4 @@ use crate::args::args::*;
             Ok(format!("{}{}", self.base_uri, options))
         }
     }
-
 }
