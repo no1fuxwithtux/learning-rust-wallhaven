@@ -125,10 +125,14 @@ pub mod args {
                         Ok(())
                     }
                     else{
-                        Err(ArgError { error: format!("unsupported option: {}", input) })?
+                        Err(ArgError { error: format!("unsupported option: {}\nsupported options:\n{}", input, self.print_options()) })?
                     }
                 } 
             }
+        }
+
+        pub fn print_options(&self) -> String {
+            format!("-t, --tag: Tag for the search query\n-c, --categories: Category for the search (General, People, Anime)\n-p, --purity: Purity for the search (Sfw,Sketchy,Nsfw)\n-s, --sorting: Sorting method (DateAdded, Relevance, Random, Views, Favorites, Toplist)\n--order: Asc Desc\n--atleast: Resolution seperated by x\n--resolutions: List of resolutions to search for\n--ratios: List of ratios with x seperator\n--colors: List of colors in Hex-format\n--page: page to query from results (probably useless right now)\n--seed: specific seed value for the search\n--apikey: required for Nsfw images")
         }
 
         pub fn get_string_mapping(input : &str) -> Result<Arg, ArgError> {
@@ -151,6 +155,7 @@ pub mod args {
                 "--page" => Ok(Arg::Page(None)),
                 "--seed" => Ok(Arg::Seed(None)),
                 "--apikey" => Ok(Arg::ApiKey(None)),
+                //We actually never read this error, but I still included it for completeness
                 _ => Err(ArgError { error: String::from("no mapping found")}) 
             }
 
