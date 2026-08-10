@@ -1,6 +1,8 @@
 pub mod args {
     use std::fmt::{self};
+    //more efficient than a vector for arg operations
     use std::collections::VecDeque;
+
     #[derive(Debug)]
     pub struct ArgName {
         pub arg_name_long : Option<String>,
@@ -96,11 +98,12 @@ pub mod args {
         Page (Option<u32>),
         Seed (Option<Seed>),
         ApiKey (Option<String>),
+        DownloadDir (Option<String>),
     }
 
     pub struct Args<> {
         pub args : VecDeque<Arg>,
-     }
+    }
     impl Args {
         pub fn parse_input (&mut self, input : &str) -> Result<(), Box<dyn std::error::Error>> {
             match Args::get_string_mapping(&input) {
@@ -121,6 +124,7 @@ pub mod args {
                             Arg::Page(val) => { let page = input.parse::<u32>()?; *val = Some(page);},
                             Arg::Seed(val) => { let seed = Seed::new(input)?; *val = Some(seed);},
                             Arg::ApiKey(val) => { *val = Some(String::from(input))}
+                            Arg::DownloadDir(val) => { *val = Some(String::from(input))}
                         }
                         Ok(())
                     }
@@ -155,6 +159,8 @@ pub mod args {
                 "--page" => Ok(Arg::Page(None)),
                 "--seed" => Ok(Arg::Seed(None)),
                 "--apikey" => Ok(Arg::ApiKey(None)),
+                "-d" => Ok(Arg::DownloadDir(None)),
+                "--downloaddir" => Ok(Arg::DownloadDir(None)),
                 //We actually never read this error, but I still included it for completeness
                 _ => Err(ArgError { error: String::from("no mapping found")}) 
             }
@@ -286,7 +292,11 @@ pub mod args {
                        if let Some(set_value) = val {
                            result+=&format!("apikey={}", set_value);
                        }
-                   }
+                   },
+                   //One Option not covered by the api itself is the downloaddir option this cannot
+                   //be declared here since it does not have a direct influence on the resulting
+                   //url
+                   _ => ()
                }
            }
            Ok(result)

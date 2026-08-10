@@ -18,14 +18,21 @@ fn main() {
         apikey : "".to_string(), ..Default::default() };
     */
     //first argument is always the programm name and not in our interest
-    match cli_args_build(&env::args().skip(1).collect()){
-        Ok(uri) => {
-            println!("invoking reqwest for {}", &uri);
+    if let Ok(cliargs) = cli_arg_parse(&env::args().skip(1).collect()) {
+        if let Ok(uri) = Settings::new().get_uri(&cliargs) {
         let result = response::response::submitwebrequest(&uri);
-    match result {
+        match result {
         Ok(object) => {
             if let Some(data) = object.data.first() {
-                let download_result = response::response::downloadwallhavenpicture(&data);
+                let mut download_dir : Option<String> = None;
+                for arg in cliargs.args.iter() {
+                    match arg {
+                        Arg::DownloadDir(val) => { if let Some(final_val) = val { download_dir = Some(final_val.to_string())} else { download_dir = None}; break; },
+                        _ => (),
+                    }
+
+                }
+                let download_result = response::response::downloadwallhavenpicture(&data, &download_dir);
                 match download_result {
                     Ok(download_result_string) => { 
                         println!("{}", download_result_string);
@@ -40,23 +47,14 @@ fn main() {
                     }
                 }
             }
-        }
+        },
         Err(err) => {
             println!("{}", err);
         }
     }
-    },
-    Err(err) => {
-        println!("{}", err);
-    }
+        }
     }
 }
-
-fn cli_args_build (args: &Vec<String>) -> Result<String, Box<dyn std::error::Error>> {
-    let settings = Settings::new();
-    Ok(settings.get_uri(&cli_arg_parse(&args)?)?)
-}
-
 
 fn cli_arg_parse (args: &Vec<String>) -> Result<Args, Box<dyn std::error::Error>> {
     let mut cli_args = Args { args: VecDeque::new() };

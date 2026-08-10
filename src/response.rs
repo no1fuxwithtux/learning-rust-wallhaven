@@ -3,6 +3,7 @@ pub mod response{
     use std::error;
     use std::io::Write;
     use std::fs::File;
+    use std::fs::DirBuilder;
 
     #[derive(Deserialize)]
     pub struct Thumb {
@@ -44,11 +45,20 @@ pub mod response{
         Ok(result_object)
     }
     #[tokio::main]
-    pub async fn downloadwallhavenpicture (pictureinfo : &Data) -> Result<String, Box<dyn error::Error>> {
+    pub async fn downloadwallhavenpicture (pictureinfo : &Data, downloadpath: &Option<String>) -> Result<String, Box<dyn error::Error>> {
         //let tmp_dir = Builder::new().prefix("wallhaven").tempdir()?;
         let target = &pictureinfo.path; 
         let response = reqwest::get(target).await?;
-        let pathname : String;
+        let mut pathname : String;
+        match downloadpath {
+            Some(path) => {
+                pathname = path.trim_end_matches("/").to_string();
+                let mut builder = DirBuilder::new();
+                builder.recursive(true);
+                builder.create(&pathname)?;
+            },
+            None => pathname = String::from("/tmp")
+        }
         let mut dest = {
             let fname = response 
                 .url()
@@ -56,7 +66,8 @@ pub mod response{
                 .and_then(|segments| segments.last())
                 .and_then(|name| if name.is_empty() { None } else { Some(name)} )
                 .unwrap_or("tmp.bin").to_string();
-            pathname = format!("/tmp/{}", &fname);
+            pathname += "/";
+            pathname += &fname;
             println!("creating file under {}", &pathname);
             File::create(&pathname)?
         };
