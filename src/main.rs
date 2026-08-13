@@ -52,8 +52,26 @@ async fn main() {
                                     Ok(download_result_string) => { 
                                         println!("{}", download_result_string);
                                         if let Some(command_val) = command {
-                                            Command::new(command_val)
-                                                .arg(&download_result_string)
+                                            //The command can actually be something that is
+                                            //seperated by spaces so it indeed is not just a single
+                                            //command, but instead contains multiple paramters
+                                            //which we need to pass. In this case we need to join
+                                            //this with other parameters
+                                            let trimmed_command = command_val.trim();
+                                            let mut first : &str = trimmed_command;
+                                            let mut additional_args : VecDeque<&str> = VecDeque::new();
+                                            if trimmed_command.contains(' ') {
+                                                let mut split = command_val.split(' ');
+                                                if let Some(first_arg) = split.next() {
+                                                    first = first_arg;
+                                                }
+                                                for additional_arg in split {
+                                                    additional_args.push_back(&additional_arg);
+                                                }
+                                            }
+                                            additional_args.push_back(&download_result_string);
+                                            Command::new(first)
+                                                .args(additional_args)
                                                 .output()
                                                 .expect("failed to execute process");
                                         }
