@@ -99,6 +99,8 @@ pub mod args {
         Seed (Option<Seed>),
         ApiKey (Option<String>),
         DownloadDir (Option<String>),
+        Command (Option<String>),
+        StdOut,
     }
 
     pub struct Args<> {
@@ -123,8 +125,10 @@ pub mod args {
                             Arg::Colors(vec) => { let color = Color::new(input)?; vec.push_front(color);},
                             Arg::Page(val) => { let page = input.parse::<u32>()?; *val = Some(page);},
                             Arg::Seed(val) => { let seed = Seed::new(input)?; *val = Some(seed);},
-                            Arg::ApiKey(val) => { *val = Some(String::from(input))}
-                            Arg::DownloadDir(val) => { *val = Some(String::from(input))}
+                            Arg::ApiKey(val) => { *val = Some(String::from(input))},
+                            Arg::DownloadDir(val) => { *val = Some(String::from(input))},
+                            Arg::Command(val) => { *val = Some(String::from(input))},
+                            _ => { Err(ArgError { error : format!("unsupported option: {}\nsupported options:\n{}", input, self.print_options()) })?; }
                         }
                         Ok(())
                     }
@@ -161,10 +165,11 @@ pub mod args {
                 "--apikey" => Ok(Arg::ApiKey(None)),
                 "-d" => Ok(Arg::DownloadDir(None)),
                 "--downloaddir" => Ok(Arg::DownloadDir(None)),
+                "--command" => Ok(Arg::Command(None)),
+                "--stdout" => Ok(Arg::StdOut),
                 //We actually never read this error, but I still included it for completeness
                 _ => Err(ArgError { error: String::from("no mapping found")}) 
             }
-
         }
         pub fn build_request (&self) -> Result<String, ArgError> {
            let mut result : String = String::from("?"); 

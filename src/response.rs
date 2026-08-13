@@ -36,7 +36,6 @@ pub mod response{
         pub data : Vec<Data>
     }
 
-    #[tokio::main]
     pub async fn submitwebrequest(uri : &str) -> Result<SearchResult, Box<dyn error::Error>> {
         let response = reqwest::get(uri).await?;
         let body = response.text().await?;
@@ -44,11 +43,9 @@ pub mod response{
         let result_object = serde_json::from_str(&body)?; 
         Ok(result_object)
     }
-    #[tokio::main]
     pub async fn downloadwallhavenpicture (pictureinfo : &Data, downloadpath: &Option<String>) -> Result<String, Box<dyn error::Error>> {
         //let tmp_dir = Builder::new().prefix("wallhaven").tempdir()?;
-        let target = &pictureinfo.path; 
-        let response = reqwest::get(target).await?;
+        let response = reqwest::get(&pictureinfo.path).await?;
         let mut pathname : String;
         match downloadpath {
             Some(path) => {
@@ -74,5 +71,9 @@ pub mod response{
         let content = response.bytes().await?;
         dest.write_all(&content)?;
         Ok(pathname)
+    }
+    pub async fn getwallhavenpicture (pictureinfo : &Data) -> Result<Vec<u8>, Box<dyn error::Error>>{
+        let response = reqwest::get(&pictureinfo.path).await?;
+        Ok(response.bytes().await?.to_vec())
     }
 }
