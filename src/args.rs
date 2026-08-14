@@ -172,142 +172,142 @@ pub mod args {
             }
         }
         pub fn build_request (&self) -> Result<String, ArgError> {
-           let mut result : String = String::from("?"); 
-           for arg in &self.args {
-               if result.chars().count() > 1 { 
-                   result += "&";
-               }
-               match arg {
-                   Arg::Tag(vec) => {
-                       if vec.is_empty() {
-                           return Err(ArgError { error : String::from("Tag defined, but no value provided!")});
-                       }
-                       else{
-                           result+= "q=";
-                           for tag in vec.iter() {
-                               result += &format!("{},", tag);
-                           }
-                           result.pop();
-                       }
-                   },
-                   Arg::Categories(vec) => {
-                       if vec.len() == 0 {
-                           return Err(ArgError { error: String::from("No value provided for categories!")});
-                       }
-                       else {
-                           let mut bin : u8 = 0;
-                           for cat in vec.iter() {
-                               bin += cat.get_val();
-                           }
-                           result+= &format!("categories={:03b}", bin);                        
-                       }
-                   },
-                   Arg::Purity(vec) => {
-                       if vec.len() == 0 {
-                           return Err(ArgError { error: String ::from("No value provided for purity!")});
-                       }
-                       else{
-                           let mut bin : u8 = 0;
-                           for cat in vec.iter() {
-                               bin += cat.get_val();
-                           }
-                           result += &format!("purity={:03b}", bin)
-                       }
-                   },
-                   Arg::Sorting(val) => {
-                      if let Some(set_value) = val {
-                          result+= "sorting="; 
-                          result+= set_value.get_val();
-                      }
-                      else{
-                          return Err(ArgError { error: String::from("No value provided for sorting!")});
-                      }
-                   },
-                   Arg::Order(val) => {
-                       if let Some(set_value) = val {
-                           result += "order=";
-                           result += set_value.get_val();
-                       }
-                       else{
-                           return Err(ArgError { error: String::from("No value provided for order!")});
-                       }
-                   },
-                   Arg::TopRange(val) => {
-                       if let Some(set_value) = val {
-                           result += "toprange=";
-                           result += set_value.get_val();
-                       }
-                   },
-                   Arg::AtLeast(val) => {
-                       if let Some(set_value) = val {
-                           result += &format!("atleast={}", set_value);
-                       }
-                   },
-                   Arg::Resolutions(vec) => {
-                       if vec.is_empty() {
-                           return Err(ArgError { error : String::from("Resolutions defined, but no value provided!")});
-                       }
-                       else{
-                           result+="resolutions=";
-                           for res in vec.iter() {
-                               result+= &format!("{},", res);
-                           }
-                           result.pop();
-                       }
-                   },
-                   Arg::Ratios(vec) => {
-                       if vec.is_empty() {
-                           return Err(ArgError { error: String::from("Ratios defined, but no value provided!")});
-                       }
-                       else{
-                           result+="ratios=";
-                           for rat in vec.iter() {
-                               result+= &format!("{},", rat);
-                           }
-                           result.pop();
-                       }
-                   },
-                   Arg::Colors(vec) => {
-                       if vec.len() == 0 {
-                           return Err(ArgError { error: String::from("Colors defined, but no value provided!")});
-                       }
-                       else{
-                           result+="colors=";
-                           for col in vec.iter() {
-                               result+= &format!("{},", col);
-                           }
-                           result.pop();
-                       }
-                   },
-                   Arg::Page(val) => {
-                       if let Some(set_value) = val {
-                           result+= "page=";
-                           result+= &set_value.to_string();
-                       }
-                       else{
-                           return Err(ArgError { error: String::from("Page defined, but no page given!")});
-                       }
-                   },
-                   Arg::Seed(val) => {
-                       if let Some(set_value) = val {
-                           result+=&format!("seed={}", set_value.seed_value);
-                       }
-                   },
-                   Arg::ApiKey(val) => {
-                       if let Some(set_value) = val {
-                           result+=&format!("apikey={}", set_value);
-                       }
-                   },
-                   //One Option not covered by the api itself is the downloaddir option this cannot
-                   //be declared here since it does not have a direct influence on the resulting
-                   //url
-                   _ => ()
-               }
-           }
-           Ok(result)
+            let mut result : String = String::from("?"); 
+            for arg in &self.args {
+                if result.chars().count() > 1 { 
+                    result += "&";
+                }
+                match arg {
+                    Arg::Tag(vec) => {
+                        if vec.is_empty() {
+                            return Err(ArgError { error : String::from("Tag defined, but no value provided!")});
+                        }
+                        else{
+                            result+= "q=";
+                            for tag in vec.iter() {
+                                result += &format!("{},", tag);
+                            }
+                            result.pop();
+                        }
+                    },
+                    Arg::Categories(vec) => {
+                        if vec.len() == 0 {
+                            return Err(ArgError { error: String::from("No value provided for categories!")});
+                        }
+                        else {
+                            let mut bin : u8 = 0;
+                            for cat in vec.iter() {
+                                bin += cat.get_val();
+                            }
+                            result+= &format!("categories={:03b}", bin);                        
+                        }
+                    },
+                    Arg::Purity(vec) => {
+                        if vec.len() == 0 {
+                            return Err(ArgError { error: String ::from("No value provided for purity!")});
+                        }
+                        else{
+                            let mut bin : u8 = 0;
+                            for cat in vec.iter() {
+                                bin += cat.get_val();
+                            }
+                            result += &format!("purity={:03b}", bin)
+                        }
+                    },
+                    Arg::Sorting(val) => {
+                        if let Some(set_value) = val {
+                            result+= "sorting="; 
+                            result+= set_value.get_val();
+                        }
+                        else{
+                            return Err(ArgError { error: String::from("No value provided for sorting!")});
+                        }
+                    },
+                    Arg::Order(val) => {
+                        if let Some(set_value) = val {
+                            result += "order=";
+                            result += set_value.get_val();
+                        }
+                        else{
+                            return Err(ArgError { error: String::from("No value provided for order!")});
+                        }
+                    },
+                    Arg::TopRange(val) => {
+                        if let Some(set_value) = val {
+                            result += "toprange=";
+                            result += set_value.get_val();
+                        }
+                    },
+                    Arg::AtLeast(val) => {
+                        if let Some(set_value) = val {
+                            result += &format!("atleast={}", set_value);
+                        }
+                    },
+                    Arg::Resolutions(vec) => {
+                        if vec.is_empty() {
+                            return Err(ArgError { error : String::from("Resolutions defined, but no value provided!")});
+                        }
+                        else{
+                            result+="resolutions=";
+                            for res in vec.iter() {
+                                result+= &format!("{},", res);
+                            }
+                            result.pop();
+                        }
+                    },
+                    Arg::Ratios(vec) => {
+                        if vec.is_empty() {
+                            return Err(ArgError { error: String::from("Ratios defined, but no value provided!")});
+                        }
+                        else{
+                            result+="ratios=";
+                            for rat in vec.iter() {
+                                result+= &format!("{},", rat);
+                            }
+                            result.pop();
+                        }
+                    },
+                    Arg::Colors(vec) => {
+                        if vec.len() == 0 {
+                            return Err(ArgError { error: String::from("Colors defined, but no value provided!")});
+                        }
+                        else{
+                            result+="colors=";
+                            for col in vec.iter() {
+                                result+= &format!("{},", col);
+                            }
+                            result.pop();
+                        }
+                    },
+                    Arg::Page(val) => {
+                        if let Some(set_value) = val {
+                            result+= "page=";
+                            result+= &set_value.to_string();
+                        }
+                        else{
+                            return Err(ArgError { error: String::from("Page defined, but no page given!")});
+                        }
+                    },
+                    Arg::Seed(val) => {
+                        if let Some(set_value) = val {
+                            result+=&format!("seed={}", set_value.seed_value);
+                        }
+                    },
+                    Arg::ApiKey(val) => {
+                        if let Some(set_value) = val {
+                            result+=&format!("apikey={}", set_value);
+                        }
+                    },
+                    //One Option not covered by the api itself is the downloaddir option this cannot
+                    //be declared here since it does not have a direct influence on the resulting
+                    //url
+                    _ => ()
+                }
+            }
+            Ok(result)
         }    
     }
-        
+
     impl Category {
         pub fn get_val(&self) -> u8 {
             match self {
@@ -317,7 +317,7 @@ pub mod args {
             }
         }
     }
-    
+
     impl NewArg<Category> for Category {
         fn new (input : &str) -> Result<Category, ArgError>{
             match input.to_uppercase().as_ref() {
@@ -338,7 +338,7 @@ pub mod args {
             }
         }
     }
-    
+
     impl NewArg<Purity> for Purity {
         fn new (input : &str) -> Result<Purity, ArgError> {
             match input.to_uppercase().as_ref() {
@@ -503,7 +503,7 @@ pub mod args {
             write!(f, "{}x{}", self.width, self.height )           
         }
     }
-    
+
     impl fmt::Display for Ratio {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result{
             write!(f, "{}x{}", self.width, self.height)
@@ -528,7 +528,7 @@ pub mod args {
                         }
                         else{
                             return Err::<Ratio,ArgError>(ArgError {error: "value for width or height in ratio invalid!".to_string() });
-                       }
+                        }
                     }
                     i +=1;
                 }
@@ -550,11 +550,11 @@ pub mod args {
             }
             if ! missmatch {
                 let _= result_hex.chars().into_iter().map(|item| 
-                {
-                    if ! valid_characters.contains(&item) {
-                    missmatch = false;
-                }
-                });
+                    {
+                        if ! valid_characters.contains(&item) {
+                            missmatch = false;
+                        }
+                    });
             }
             if missmatch {
                 Err(ArgError { error : String::from("invalid value for color")})
@@ -587,15 +587,15 @@ pub mod args {
     impl NewArg<Tag> for Tag {
         fn new (input : &str) -> Result<Tag, ArgError> {
             if input.len() > 1{
-            if input.contains("+"){
-                Ok(Tag {tagname : input.replace("+", ""), tagmodifier: Some(TagModifier::Plus)})
-            }
-            else if input.contains("-"){
-                Ok(Tag { tagname: input.replace("-", ""), tagmodifier: Some(TagModifier::Minus)})
-            }
-            else{
-                Ok(Tag {tagname: input.to_string(), tagmodifier: None})
-            }
+                if input.contains("+"){
+                    Ok(Tag {tagname : input.replace("+", ""), tagmodifier: Some(TagModifier::Plus)})
+                }
+                else if input.contains("-"){
+                    Ok(Tag { tagname: input.replace("-", ""), tagmodifier: Some(TagModifier::Minus)})
+                }
+                else{
+                    Ok(Tag {tagname: input.to_string(), tagmodifier: None})
+                }
             }
             else{
                 Err(ArgError { error : String::from("invalid tag declaration")})
@@ -603,7 +603,7 @@ pub mod args {
         }
     }
     impl fmt::Display for Color {
-            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> std::fmt::Result {
+        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> std::fmt::Result {
             write!(f, "{}", self.hex_value.to_lowercase())
         }
     }
