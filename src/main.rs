@@ -42,8 +42,8 @@ async fn main() {
                             if stdout {
                                 if let Ok(picturedata) =  response::response::getwallhavenpicture(&data).await {
                                     let mut stdout = io::stdout();
-                                    stdout.write_all(&picturedata);
-                                    stdout.flush();
+                                    let _ = stdout.write_all(&picturedata);
+                                    let _ = stdout.flush();
                                 }
                             }
                             else {
