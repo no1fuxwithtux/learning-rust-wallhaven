@@ -13,9 +13,11 @@ pub mod args {
     pub struct ArgError {
         pub error: String, 
     }
+
     impl std::error::Error for ArgError{
 
     }
+
     impl fmt::Display for ArgError {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             write!(f, "{}", self.error)
@@ -31,11 +33,13 @@ pub mod args {
         Anime,
         People
     }
+
     pub enum Purity  {
         Sfw,
         Sketchy,
         Nsfw
     }
+    
     pub enum Sorting {
         DateAdded,
         Relevance,
@@ -44,10 +48,12 @@ pub mod args {
         Favorites,
         Toplist
     }
+
     pub enum Order {
         Desc,
         Asc
     }
+
     pub enum TopRange{
         OneDay,
         ThreeDays,
@@ -57,33 +63,41 @@ pub mod args {
         SixMonths,
         OneYear, 
     }
+
     pub struct Resolution{
         pub height : u16,
         pub width : u16,
     }
+
     pub struct MinResolution {
         pub height: u16,
         pub width : u16
     }
+
     pub struct Ratio {
         pub width : u8,
         pub height : u8,
     }
+
     pub struct Color{
         hex_value : String,
     }
+
     pub struct Seed{
         seed_value : String,
     }
+
     pub enum TagModifier{
         Plus,
         Minus
     }
+
     pub struct Tag {
         pub tagname : String,
         //fuzzy search does not require a tag
         pub tagmodifier : Option<TagModifier>,
     }
+
     pub enum Arg {
         Tag (VecDeque<Tag>),
         Categories (VecDeque <Category>),
@@ -106,6 +120,7 @@ pub mod args {
     pub struct Args<> {
         pub args : VecDeque<Arg>,
     }
+
     impl Args {
         pub fn parse_input (&mut self, input : &str) -> Result<(), Box<dyn std::error::Error>> {
             match Args::get_string_mapping(&input) {
@@ -171,6 +186,7 @@ pub mod args {
                 _ => Err(ArgError { error: String::from("no mapping found")}) 
             }
         }
+
         pub fn build_request (&self) -> Result<String, ArgError> {
             let mut result : String = String::from("?"); 
             for arg in &self.args {
@@ -350,7 +366,6 @@ pub mod args {
         }
     }
 
-
     impl TopRange {
         pub fn get_val(&self) -> &str {
             match self {
@@ -509,6 +524,7 @@ pub mod args {
             write!(f, "{}x{}", self.width, self.height)
         }
     }
+
     impl NewArg<Ratio> for Ratio {
         fn new (input : &str) -> Result<Ratio, ArgError> {
             if input.contains("x"){
@@ -540,6 +556,7 @@ pub mod args {
 
         }
     } 
+
     impl NewArg<Color> for Color {
         fn new (hex : &str) -> Result<Color,ArgError> {
             let mut missmatch : bool = false;
@@ -564,7 +581,8 @@ pub mod args {
             }
         }
     } 
-    impl fmt::Display for TagModifier{
+
+    impl fmt::Display for TagModifier {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             let modifier : String;
             match self{
@@ -574,7 +592,8 @@ pub mod args {
             write!(f, "{}", modifier)
         }
     }
-    impl fmt::Display for Tag{
+
+    impl fmt::Display for Tag {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             if self.tagmodifier.is_some(){
                 write!(f, "{}{}", self.tagmodifier.as_ref().unwrap(), self.tagname)
@@ -584,6 +603,7 @@ pub mod args {
             }
         }
     }
+
     impl NewArg<Tag> for Tag {
         fn new (input : &str) -> Result<Tag, ArgError> {
             if input.len() > 1{
@@ -607,6 +627,7 @@ pub mod args {
             write!(f, "{}", self.hex_value.to_lowercase())
         }
     }
+
     impl NewArg<Seed> for Seed {
         fn new (seed : &str) -> Result<Seed, ArgError> {
             let mut missmatch : bool = false;
