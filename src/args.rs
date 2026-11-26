@@ -124,8 +124,8 @@ pub mod args {
     impl Args {
         pub fn parse_input (&mut self, input : &str) -> Result<(), Box<dyn std::error::Error>> {
             match Args::get_string_mapping(&input) {
-                Ok(result) => { self.args.push_front(result); Ok(()) },
-                Err(_) => {
+                Some(result) => { self.args.push_front(result); Ok(()) },
+                None => {
                     if let Some(arg) = self.args.front_mut(){
                         match arg {
                             Arg::Tag(vec) => { let tag = Tag::new(input)?; vec.push_front(tag); },
@@ -158,32 +158,34 @@ pub mod args {
             format!("-t, --tag: Tag for the search query\n-c, --categories: Category for the search (General, People, Anime)\n-p, --purity: Purity for the search (Sfw,Sketchy,Nsfw)\n-s, --sorting: Sorting method (DateAdded, Relevance, Random, Views, Favorites, Toplist)\n--order: Asc Desc\n--atleast: Resolution seperated by x\n--resolutions: List of resolutions to search for\n--ratios: List of ratios with x seperator\n--colors: List of colors in Hex-format\n--page: page to query from results (probably useless right now)\n--seed: specific seed value for the search\n--apikey: required for Nsfw images")
         }
 
-        pub fn get_string_mapping(input : &str) -> Result<Arg, ArgError> {
+        fn get_string_mapping(input : &str) -> Option<Arg> {
             match input {
-                "-t" => Ok(Arg::Tag(VecDeque::new())),
-                "--tag" => Ok(Arg::Tag(VecDeque::new())),
-                "-c" => Ok(Arg::Categories(VecDeque::new())),
-                "--categories" => Ok(Arg::Categories(VecDeque::new())),
-                "-p" => Ok(Arg::Purity(VecDeque::new())),
-                "--purity" => Ok(Arg::Purity(VecDeque::new())),
-                "-s" => Ok(Arg::Sorting(None)),
-                "--sorting" => Ok(Arg::Sorting(None)),
-                "-o" => Ok(Arg::Order(None)),
-                "--order" => Ok(Arg::Order(None)),
-                "--toprange" => Ok(Arg::TopRange(None)),
-                "--atleast" => Ok(Arg::AtLeast(None)),
-                "--resolutions" => Ok(Arg::Resolutions(VecDeque::new())),
-                "--ratios" => Ok(Arg::Ratios(VecDeque::new())),
-                "--colors" => Ok(Arg::Colors(VecDeque::new())),
-                "--page" => Ok(Arg::Page(None)),
-                "--seed" => Ok(Arg::Seed(None)),
-                "--apikey" => Ok(Arg::ApiKey(None)),
-                "-d" => Ok(Arg::DownloadDir(None)),
-                "--downloaddir" => Ok(Arg::DownloadDir(None)),
-                "--command" => Ok(Arg::Command(None)),
-                "--stdout" => Ok(Arg::StdOut),
+                "-t" => Some(Arg::Tag(VecDeque::new())),
+                "--tag" => Some(Arg::Tag(VecDeque::new())),
+                "-c" => Some(Arg::Categories(VecDeque::new())),
+                "--categories" => Some(Arg::Categories(VecDeque::new())),
+                "-p" => Some(Arg::Purity(VecDeque::new())),
+                "--purity" => Some(Arg::Purity(VecDeque::new())),
+                "-s" => Some(Arg::Sorting(None)),
+                "--sorting" => Some(Arg::Sorting(None)),
+                "-o" => Some(Arg::Order(None)),
+                "--order" => Some(Arg::Order(None)),
+                "--toprange" => Some(Arg::TopRange(None)),
+                "--atleast" => Some(Arg::AtLeast(None)),
+                "--resolutions" => Some(Arg::Resolutions(VecDeque::new())),
+                "--ratios" => Some(Arg::Ratios(VecDeque::new())),
+                "--colors" => Some(Arg::Colors(VecDeque::new())),
+                "--page" => Some(Arg::Page(None)),
+                "--seed" => Some(Arg::Seed(None)),
+                "--apikey" => Some(Arg::ApiKey(None)),
+                "-d" => Some(Arg::DownloadDir(None)),
+                "--downloaddir" => Some(Arg::DownloadDir(None)),
+                "--command" => Some(Arg::Command(None)),
+                "--stdout" => Some(Arg::StdOut),
                 //We actually never read this error, but I still included it for completeness
-                _ => Err(ArgError { error: String::from("no mapping found")}) 
+                //although it is not really an error when this function is called since this only
+                //check if this is a parameter or not. So we change this
+                _ => None,
             }
         }
 
